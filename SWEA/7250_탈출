@@ -1,0 +1,183 @@
+/*
+-- 스캇
+S : 출발점
+A : 이동 가능한 길 -- 시간 K로 돌아감
+W : 몸의 크기를 줄이면 통과할 수 있는 벽 -- K 시간 동안
+F : 불, 통과X -- 벽(W, X)에는 불 붙지 않음
+X : 벽, 통과X
+E : 탈출구, 최단 거리로 탈출
+
+-- 악당
+V : 출발점
+A, F : 통과O, 벽(W, X) 통과X
+// 스캇과 악당 마주치면 아무일 X
+*/
+
+#include <iostream>
+#include <queue>
+#include <cstring>
+
+using namespace std;
+
+struct Info {
+	int x, y, cnt;
+};
+struct sInfo {
+	int x, y, cnt, k;
+};
+int T, N, M, K, ans, px, py;
+char arr[1001][1001];
+int scheck[1001][1001], echeck[1001][1001];
+int dx[4] = { 0, 1, 0, -1 }, dy[4] = { 1, 0, -1, 0 };
+bool flag = false;
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> T;
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> N >> M >> K;
+		// 초기화
+		ans = 0;
+		flag = false;
+		queue<Info> evil, fire;
+		queue<sInfo> scot;
+		memset(echeck, 0, sizeof(echeck));
+		memset(scheck, 0, sizeof(scheck));
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				cin >> arr[i][j];
+				if (arr[i][j] == 'S') {
+					arr[i][j] = 'A';
+					scheck[i][j] = 1;
+					scot.push({ i, j, 0, K });
+				}
+				else if (arr[i][j] == 'V') {
+					arr[i][j] = 'A';
+					echeck[i][j] = 1;
+					evil.push({ i, j, 0 });
+				}
+				else if (arr[i][j] == 'F')
+					fire.push({ i, j, 0 });
+				else if (arr[i][j] == 'E') {
+					px = i;
+					py = j;
+				}
+			}
+		}
+
+		int cnt = 0;
+		while (!scot.empty()) {
+			//cout << "check in" << '\n';
+			// 불
+
+			while (!fire.empty() && cnt == fire.front().cnt) {
+				//cout << "fire in " << fire.front().cnt << '\n';
+				int fx = fire.front().x;
+				int fy = fire.front().y;
+				int fcnt = fire.front().cnt;
+				fire.pop();
+
+				for (int d = 0; d < 4; d++) {
+					int ffx = fx + dx[d];
+					int ffy = fy + dy[d];
+					if (ffx < 0 || ffx >= N || ffy < 0 || ffy >= M || arr[ffx][ffy] == 'W' || arr[ffx][ffy] == 'X' || arr[ffx][ffy] == 'E')
+						continue;
+					if (arr[ffx][ffy] == 'A') {
+						arr[ffx][ffy] = 'F';
+						fire.push({ ffx, ffy, fcnt + 1 });
+					}
+				}
+			}
+
+			// 악당 이동
+			while (!evil.empty() && cnt == evil.front().cnt) {
+
+				int ex = evil.front().x;
+				int ey = evil.front().y;
+				int ecnt = evil.front().cnt;
+				//cout << "evil in" << ex << ' ' << ey << '\n';
+				evil.pop();
+				// 종료조건
+				if (ex == px && ey == py) {
+					//cout << "evil out!!!!!\n\n\n";
+					flag = true;
+					ans = -1;
+					break;
+				}
+
+				for (int d = 0; d < 4; d++) {
+					int eex = ex + dx[d];
+					int eey = ey + dy[d];
+					if (eex < 0 || eex >= N || eey < 0 || eey >= M || arr[eex][eey] == 'W' || arr[eex][eey] == 'X' || echeck[eex][eey] == 1)
+						continue;
+					if (arr[eex][eey] == 'A' || arr[eex][eey] == 'F' || arr[eex][eey] == 'E') {
+						echeck[eex][eey] = 1;
+						evil.push({ eex, eey, ecnt + 1 });
+					}
+				}
+			}
+
+			if (flag)
+				break;
+
+			// 스캇 이동
+			while (!scot.empty() && cnt == scot.front().cnt) {
+				int sx = scot.front().x;
+				int sy = scot.front().y;
+				int scnt = scot.front().cnt;
+				int kcnt = scot.front().k;
+				//cout << "scot in" << sx << ' ' << sy << '\n';
+				scot.pop();
+
+				// 종료조건
+				if (sx == px && sy == py && arr[px][py] == 'E') {
+					if (ans != -1) {
+						//cout << "scot out!!!!!\n\n\n";
+						ans = scnt;
+						flag = true;
+						break;
+					}
+				}
+				for (int d = 0; d < 4; d++) {
+					int ssx = sx + dx[d];
+					int ssy = sy + dy[d];
+					if (ssx < 0 || ssx >= N || ssy < 0 || ssy >= M || arr[ssx][ssy] == 'F' || arr[ssx][ssy] == 'X' || scheck[ssx][ssy] == 1)
+						continue;
+					if (arr[ssx][ssy] == 'A' || arr[ssx][ssy] == 'E') {
+						scheck[ssx][ssy] = 1;
+						if (arr[ssx][ssy] == 'A' && arr[sx][sy] == 'W') {
+							scheck[sx][sy] = 0;
+						}
+						scot.push({ ssx, ssy, scnt + 1 , K });
+					}
+					else if (arr[ssx][ssy] == 'W') {
+						if (kcnt > 0) {
+							scheck[ssx][ssy] = 1;
+							scot.push({ ssx, ssy, scnt + 1 , kcnt - 1 });
+						}
+					}
+				}
+			}
+
+			//지도 출력
+			/*for (int i = 0; i < N; i++) {
+				for (int j = 0; j < M; j++) {
+					cout << arr[i][j] << ' ';
+				}
+				cout << '\n';
+			}*/
+
+			if (flag)
+				break;
+			cnt++;
+			//cout << "while end\n\n";
+			//cout << "scot size : " << scot.size() << '\n';
+		}
+
+		if (!flag)
+			ans = -1;
+		cout << "#" << tc << ' ' << ans << '\n';
+	}
+	
+	return 0;
+}

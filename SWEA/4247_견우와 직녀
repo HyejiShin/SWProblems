@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+int T, N, M;
+int arr[11][11], check[11][11];
+int dx[4] = { 0, 1, 0, -1 }, dy[4] = { 1, 0, -1, 0 };
+
+void solve(int x, int y, int time, int make) {
+	check[x][y] = time;
+
+	// 종료조건
+	if (x == N-1 && y == N-1) {
+		return;
+	}
+
+	for (int d = 0; d < 4; d++) {
+		int nx = x + dx[d];
+		int ny = y + dy[d];
+
+		if (nx < 0 || nx >= N || ny < 0 || ny >= N)
+			continue;
+
+		// 길
+		if (arr[nx][ny] == 1 && (check[nx][ny] == 0 || check[nx][ny] > time+1)) {
+			solve(nx, ny, time + 1, make);
+		}
+		// 다리 만들어 줘야 함
+		else if (arr[nx][ny] == 0 && make == 0 && arr[x][y] == 1 && (check[nx][ny] == 0 || check[nx][ny] > time + M-(time%M))) {
+			solve(nx, ny, time + M - (time%M), 1);
+		}
+		// 오작교인 경우
+		else if (arr[nx][ny] > 1 && arr[x][y] == 1 && (check[nx][ny] == 0 || check[nx][ny] > time + arr[nx][ny] - (time%arr[nx][ny]))) {
+			solve(nx, ny, time + arr[nx][ny] - (time%arr[nx][ny]), make);
+		}
+	}
+}
+
+int main() {
+	cin >> T;
+
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> N >> M;
+		memset(arr, 0, sizeof(int) * 11 * 11);
+		memset(check, 0, sizeof(int) * 11 * 11);
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				cin >> arr[i][j];
+			}
+		}
+
+		solve(0, 0, 0, 0);
+		cout << "#" << tc << ' ' << check[N - 1][N - 1] << '\n';
+	}
+
+	return 0;
+}

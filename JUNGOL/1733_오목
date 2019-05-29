@@ -1,0 +1,84 @@
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+int arr[20][20], bcheck[20][20][4], wcheck[20][20][4];
+int sx, sy, temp, ans;
+int dx[4] = { -1, 0, 1, 1 }, dy[4] = { 1, 1, 1, 0};
+/*
+0 : 대각선 위
+1 : 오른쪽
+2 : 대각선 아래
+3 : 아래
+*/
+void solve(int x, int y, int color, int cnt, int d) {
+	if (color == 1)
+		bcheck[x][y][d] = 1;
+	else if (color == 2)
+		wcheck[x][y][d] = 1;
+
+	if (cnt >= 5) {
+		temp = max(cnt, temp);
+	}
+	int nx = x + dx[d];
+	int ny = y + dy[d];
+	if (nx >= 1 && nx <= 19 && ny >= 1 && ny <= 19 && arr[nx][ny] == color) {
+		if (color == 1 && bcheck[nx][ny][d] == 0)
+			solve(nx, ny, color, cnt + 1, d);
+		else if (color == 2 && wcheck[nx][ny][d] == 0)
+			solve(nx, ny, color, cnt + 1, d);
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	for (int i = 1; i <= 19; i++) {
+		for (int j = 1; j <= 19; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	for (int j = 1; j <= 19; j++) {
+		for (int i = 1; i <= 19; i++) {
+			temp = 0;
+			if (arr[i][j] == 1) {
+				for (int d = 0; d < 4; d++) {
+					solve(i, j, 1, 1, d);
+					if (temp == 5) {
+						ans = 1;
+						sx = i;
+						sy = j;
+						break;
+					}
+				}
+			}
+			else if (arr[i][j] == 2) {
+				for (int d = 0; d < 4; d++) {
+					solve(i, j, 2, 1, d);
+					if (temp == 5) {
+						ans = 2;
+						sx = i;
+						sy = j;
+						break;
+					}
+				}
+			}
+			if (ans > 0)
+				break;
+		}
+		if (ans > 0)
+			break;
+	}
+
+	if (ans == 0) {
+		cout << "0\n";
+		return 0;
+	}
+	else {
+		cout << ans << "\n";
+		cout << sx << ' ' << sy << '\n';
+	}
+	return 0;
+}

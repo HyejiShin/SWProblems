@@ -1,0 +1,58 @@
+#include <iostream>
+
+using namespace std;
+
+int T, N, check = 0;
+/*
+check == 0 // 올라갈 때
+check == 1 // 내여올 때
+올라감 -> 산X
+올라감 - 내려감 => 산O
+올라감 - 내려감 - 내려감 => 산O
+*/
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> T;
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> N;
+		check = 0;
+		int cnt = 0;
+		int before = 0;
+		int up = 0; int down = 0;
+		cin >> before;
+		int a = 0;
+		for (int i = 1; i < N; i++) {
+			cin >> a;
+			if (check == 0 && before < a) {
+				up++;
+				before = a;
+			}
+			else if (check == 0 && before > a) {
+				down++;
+				if (i == N - 1) {
+					cnt += up * down;
+				}
+				check = 1;
+				before = a;
+			}
+			else if (check == 1 && before > a) {
+				down++;
+				if (i == N - 1) {
+					cnt += up * down;
+				}
+				before = a;
+			}
+			else if (check == 1 && before < a) {
+				check = 0;
+				cnt += up * down;
+				up = 1; down = 0;
+				before = a;
+			}
+			//cout << a << ' ' << up << ' ' << down << '\n';
+		}
+
+		cout << "#" << tc << ' ' << cnt << '\n';
+	}
+
+	return 0;
+}

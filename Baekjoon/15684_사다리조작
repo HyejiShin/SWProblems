@@ -1,0 +1,87 @@
+// https://www.acmicpc.net/problem/15684
+// 15684_사다리조작
+
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+using namespace std;
+
+int N, M, H, a, b, ans = 1000;
+int ladder[31][12];
+vector<pair<int, int> > vec;
+
+void solve(int idx, int cnt) {
+	
+	////사다리 맞게 내려가는지 확인
+	bool flag = true;
+	for (int i = 1; i <= N; i++) {
+		int k = i;
+		for (int j = 1; j <= H; j++) {
+			//왼쪽
+			if (ladder[j][k - 1] == 2) {
+				k--;
+			}
+			else if (ladder[j][k] == 2) {
+				k++;
+			}
+		}
+		if (k != i) {
+			flag = false;
+			break;
+		}
+	}
+
+	if (flag) {
+		ans = min(ans, cnt);
+		return;
+	}
+
+	/// 종료조건
+	if (idx == vec.size()) {
+		return;
+	}
+	if (cnt == 3) {
+		return;
+	}
+
+	if (ladder[vec[idx].first][vec[idx].second] == 0) {
+		ladder[vec[idx].first][vec[idx].second] = 2;
+		ladder[vec[idx].first][vec[idx].second - 1] = 1;
+		ladder[vec[idx].first][vec[idx].second + 1] = 1;
+		solve(idx + 1, cnt + 1);
+		ladder[vec[idx].first][vec[idx].second] = 0;
+		ladder[vec[idx].first][vec[idx].second - 1] = 0;
+		ladder[vec[idx].first][vec[idx].second + 1] = 0;
+	}
+	solve(idx + 1, cnt);
+
+	return;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> N >> M >> H;
+	
+	for (int i = 0; i < M; i++) {
+		cin >> a >> b;
+		ladder[a][b] = 2; // 사다리 있음
+		ladder[a][b - 1] = 1; // 사다리 놓을 수 없음
+		ladder[a][b + 1] = 1;
+	}
+
+	for (int i = 1; i <= H; i++) {
+		for (int j = 1; j <= N - 1; j++) {
+			if (ladder[i][j] == 0)
+				vec.push_back({ i, j });
+		}
+	}
+
+	solve(0, 0);
+
+	if (ans == 1000 || ans > 3)
+		ans = -1;
+	cout << ans << '\n';
+	return 0;
+}

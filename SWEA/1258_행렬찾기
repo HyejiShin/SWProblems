@@ -1,0 +1,80 @@
+// sort 시 -- 사용자 정의 함수 사용하는 법
+// sort(v.begin(), v.end(), compare); // compare -- bool형 함수
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+int T, N;
+int arr[101][101], check[101][101];
+struct Info{
+	int size, row, col;
+};
+vector<Info> list;
+
+void solve(int x, int y, int cnt) {
+	int row = 0, col = 0;
+	// 행
+	for (int i = x; i < N; i++) {
+		if (arr[i][y] == 0)
+			break;
+		row++;
+	}
+	// 열
+	for (int i = y; i < N; i++) {
+		if (arr[x][i] == 0)
+			break;
+		col++;
+	}
+	for (int i = x; i < x + row; i++) {
+		for (int j = y; j < y + col; j++) {
+			check[i][j] = 1;
+		}
+	}
+//	cout << row << ' ' << col << '\n';
+	list.push_back({ row*col, row, col });
+}
+
+bool compare(Info a, Info b) {
+	if (a.size == b.size)
+		return a.row < b.row;
+	else 
+		return a.size < b.size;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> T;
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> N;
+		list.clear();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				cin >> arr[i][j];
+				check[i][j] = 0;
+			}
+		}
+
+		int cnt = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (check[i][j] == 0 && arr[i][j] > 0) {
+					cnt++;
+					check[i][j] = 1;
+					solve(i, j, cnt);
+				}
+			}
+		}
+
+		sort(list.begin(), list.end(), compare);
+
+		cout << "#" << tc << ' ' << cnt << ' ';
+		for (int i = 0; i < list.size(); i++) {
+			cout << list[i].row << ' ' << list[i].col << ' ';
+		}
+		cout << '\n';
+	}
+	return 0;
+}

@@ -1,0 +1,68 @@
+// https://www.acmicpc.net/problem/14502
+// 14502_연구소
+
+#include <iostream>
+#include <utility>
+#include <vector>
+#include <queue>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+int N, M, mmin = 1000;
+int arr[9][9], tmp[9][9];
+vector<pair<int, int> > virus, blank;
+int dx[4] = { 0, 1, 0, -1 };
+int dy[4] = { 1, 0, -1, 0 };
+
+int main() {
+	cin >> N >> M;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> arr[i][j];
+			if (arr[i][j] == 0)
+				blank.push_back({ i, j });
+			else if (arr[i][j] == 2)
+				virus.push_back({ i, j });
+		}
+	}
+
+	for (int i = 0; i <= blank.size() - 3; i++) {
+		for (int j = i + 1; j <= blank.size() - 2; j++) {
+			for (int k = j + 1; k <= blank.size() - 1; k++) {
+				memcpy(tmp, arr, sizeof(arr));
+				tmp[blank[i].first][blank[i].second] = 1;
+				tmp[blank[j].first][blank[j].second] = 1;
+				tmp[blank[k].first][blank[k].second] = 1;
+				
+				int cnt = 0;
+				for (int p = 0; p < virus.size(); p++) {
+					queue<pair<int, int> > q;
+					q.push({ virus[p].first, virus[p].second });
+					while (!q.empty()) {
+						int x = q.front().first;
+						int y = q.front().second;
+						q.pop();
+
+						for (int d = 0; d < 4; d++) {
+							int nx = x + dx[d];
+							int ny = y + dy[d];
+							if (nx < 0 || nx >= N || ny < 0 || ny >= M || tmp[nx][ny] != 0)
+								continue;
+							cnt++;
+							tmp[nx][ny] = 2;
+							q.push({ nx, ny });
+						}
+					}
+
+				}
+				mmin = min(mmin, cnt);
+			}
+		}
+	}
+
+	cout << blank.size() - mmin - 3 << '\n';
+
+	return 0;
+}

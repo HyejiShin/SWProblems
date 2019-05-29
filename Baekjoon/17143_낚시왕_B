@@ -1,0 +1,100 @@
+#include <iostream>
+
+using namespace std;
+
+struct info {
+	int s, d, z; // 속력, 이동방향, 크기
+};
+
+int R, C, M, ans = 0;
+int r, c, s, d, z;
+int dx[5] = { 0, -1, 1, 0, 0 }, dy[5] = { 0, 0, 0, 1, -1 };
+info arr[101][101], temp[101][101];
+
+void move(int x, int y, int d, int s) {
+	int nx = x, ny = y;
+	for (int i = 0; i < s; i++) {
+		// 방향 확인
+		if (d == 1 && nx == 1) {
+			d = 2;
+		}
+		else if (d == 2 && nx == R) {
+			d = 1;
+		}
+		else if (d == 3 && ny == C) {
+			d = 4;
+		}
+		else if (d == 4 && ny == 1) {
+			d = 3;
+		}
+
+		nx += dx[d]; ny += dy[d];
+	}
+
+	if (temp[nx][ny].d > 0) {
+		if (temp[nx][ny].z < arr[x][y].z) {
+			temp[nx][ny].s = arr[x][y].s;
+			temp[nx][ny].d = d;
+			temp[nx][ny].z = arr[x][y].z;
+		}
+	}
+	else if(temp[nx][ny].d == 0){
+		temp[nx][ny].s = arr[x][y].s;
+		temp[nx][ny].d = d;
+		temp[nx][ny].z = arr[x][y].z;
+	}
+	arr[x][y].s = 0;
+	arr[x][y].d = 0;
+	arr[x][y].z = 0;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> R >> C >> M;
+
+	for (int i = 0; i < M; i++) {
+		cin >> r >> c >> s >> d >> z;
+		arr[r][c].s = s;
+		arr[r][c].d = d;
+		arr[r][c].z = z;
+	}
+
+	for (int i = 1; i <= C; i++) {
+
+		// 상어 잡음
+		for (int j = 1; j <= R; j++) {
+			if (arr[j][i].d > 0) {
+				ans += arr[j][i].z;
+				arr[j][i].s = 0;
+				arr[j][i].d = 0;
+				arr[j][i].z = 0;
+				break;
+			}
+			
+		}
+
+		// 상어 이동
+		for (int x = 1; x <= R; x++) {
+			for (int y = 1; y <= C; y++) {
+				if (arr[x][y].d > 0) {
+					move(x, y, arr[x][y].d, arr[x][y].s);
+				}
+			}
+		}
+
+		// 리셋
+		for (int x = 1; x <= R; x++) {
+			for (int y = 1; y <= C; y++) {
+				arr[x][y].s = temp[x][y].s;
+				arr[x][y].d = temp[x][y].d;
+				arr[x][y].z = temp[x][y].z;
+				temp[x][y].s = 0;
+				temp[x][y].d = 0;
+				temp[x][y].z = 0;
+			}
+		}
+	}
+
+	cout << ans << '\n';
+	return 0;
+}

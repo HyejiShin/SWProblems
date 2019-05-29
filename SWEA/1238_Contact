@@ -1,0 +1,60 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int N, start, mmax, ans;
+int arr[101][101];
+int check[101];
+struct Info {
+	int idx, cnt;
+};
+
+void solve(int start) {
+	queue<Info> q;
+	q.push({start, 1});
+	int cnt = 1;
+	vector<int> v;
+	while (!q.empty()) {
+		v.clear();
+		while (!q.empty() && q.front().cnt == cnt) {
+			int s = q.front().idx;
+			q.pop();
+			v.push_back(s);
+			for (int i = 1; i <= mmax; i++) {
+				if (arr[s][i] == 1 && check[i] == 0) {
+					check[i] = 1;
+					q.push({ i, cnt + 1 });
+				}
+			}
+		}
+		cnt++;
+	}
+	sort(v.begin(), v.end());
+	ans = v[v.size() - 1];
+}
+
+int main() {
+	ios::sync_with_stdio(false);	
+	for (int tc = 1; tc <= 10; tc++) {
+		//초기화
+		mmax = 0;
+		memset(arr, 0, sizeof(arr));
+		memset(check, 0, sizeof(check));
+		cin >> N >> start;
+
+		for (int i = 1; i <= N / 2; i++) {
+			int from, to;
+			cin >> from >> to;
+			arr[from][to] = 1;
+			mmax = max(mmax, max(from, to));
+		}
+		check[start] = 1;
+		solve(start);
+		cout << '#' << tc << ' ' << ans << '\n';
+	}
+	return 0;
+}

@@ -1,0 +1,80 @@
+// https://www.acmicpc.net/problem/14502
+// 14502_연구소
+
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
+
+int N, M, cc = 0, vi = 1000, ccnt = 0;
+int arr[9][9], check[9][9];
+vector<pair<int, int> > virus, blank;
+int dx[4] = { 0, 1, 0, -1 };
+int dy[4] = { 1, 0, -1, 0 };
+
+void dfs(int x, int y) {
+	for (int d = 0; d < 4; d++) {
+		int nx = x + dx[d];
+		int ny = y + dy[d];
+		if (nx < 0 || nx >= N || ny < 0 || ny >= M )
+			continue;
+		
+		if (arr[nx][ny] == 0 && check[nx][ny] == 0) {
+			check[nx][ny] = 1;
+			ccnt++;
+			dfs(nx, ny);
+		}
+	}
+	return;
+}
+
+void solve(int idx, int cnt) {
+	
+	// 바이러스가 퍼질 수 있는 경우 확인
+	if (cnt == 3) {
+		ccnt = 0;
+		memset(check, 0, sizeof(check));
+		for (int i = 0; i < virus.size(); i++) {
+			dfs(virus[i].first, virus[i].second);
+		}
+		vi = min(vi, ccnt);
+		return;
+	}
+
+	// 종료조건 범위 위치 잘 확인하기****
+	if (idx == blank.size()) {
+		return;
+	}
+
+	arr[blank[idx].first][blank[idx].second] = 1;
+	solve(idx + 1, cnt + 1);
+	arr[blank[idx].first][blank[idx].second] = 0;
+	solve(idx + 1, cnt);
+	return;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> N >> M;
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> arr[i][j];
+			if (arr[i][j] == 0) {
+				blank.push_back({ i, j });				
+			}
+			else if (arr[i][j] == 2) {
+				virus.push_back({ i, j });
+			}
+		}
+	}
+
+	cc = blank.size();
+	
+	solve(0, 0);
+	cout << (cc - vi -3) << '\n';
+	return 0;
+}

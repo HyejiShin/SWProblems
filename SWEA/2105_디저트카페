@@ -1,0 +1,116 @@
+// https://www.swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV5VwAr6APYDFAWu
+// 2105_디저트카페
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int T, N, ans = 0;
+int arr[21][21];
+vector<int> dessert;
+bool flag = false;
+
+bool checkSame(int num) {
+	for (int i = 0; i < dessert.size(); i++) {
+		if (num == dessert[i])
+			return false;
+	}
+	return true;
+}
+
+bool checkBound(int x, int y) {
+	if (x < 0 || x >= N || y < 0 || y >= N)
+		return false;
+	return true;
+}
+
+void solve(int x, int y, int a, int b) {
+	int nx = x, ny = y;
+	// 1
+	for (int i = 0; i < a; i++) {
+		nx += 1;
+		ny += 1;
+		if (!checkBound(nx, ny))
+			return;
+		if (!checkSame(arr[nx][ny]))
+			return;
+		dessert.push_back(arr[nx][ny]);
+	}
+
+	// 2
+	for (int i = 0; i < b; i++) {
+		nx += 1;
+		ny -= 1;
+		if (!checkBound(nx, ny))
+			return;
+		if (!checkSame(arr[nx][ny]))
+			return;
+		dessert.push_back(arr[nx][ny]);
+	}
+
+	// 3
+	for (int i = 0; i < a; i++) {
+		nx -= 1;
+		ny -= 1;
+		if (!checkBound(nx, ny))
+			return;
+		if (!checkSame(arr[nx][ny]))
+			return;
+		dessert.push_back(arr[nx][ny]);
+	}
+
+	// 4
+	for (int i = 0; i < b; i++) {
+		nx -= 1;
+		ny += 1;
+		if (!checkBound(nx, ny))
+			return;
+		if (!checkSame(arr[nx][ny]))
+			return;
+		dessert.push_back(arr[nx][ny]);
+	}
+	flag = true;
+	return;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> T;
+
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> N;
+		ans = -1;
+		flag = false;
+		memset(arr, 0, sizeof(arr));
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				cin >> arr[i][j];
+			}
+		}
+
+		for (int n = N - 1; n >= 2; n--) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					for (int a = 1; a <= n - 1; a++) {
+						int b = n - a;
+						dessert.clear();
+						solve(i, j, a, b);
+						if (flag) {
+							//cout << ans << '\n';
+							ans = dessert.size();
+							break;
+						}
+					}
+					if (flag) break;
+				}
+				if (flag) break;
+			}
+			if (flag) break;
+		}
+
+		cout << "#" << tc << ' ' << ans << '\n';
+	}
+	return 0;
+}

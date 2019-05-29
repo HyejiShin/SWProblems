@@ -1,0 +1,63 @@
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Solution1238_Contact_서울9반_신혜지 {
+	static int N, start, mmax;
+	static int[][] arr;
+	static int[] check;
+	
+	public static void main(String[] args) throws Exception {
+		System.setIn(new FileInputStream("res/Solution1238_input.txt"));
+		Scanner sc = new Scanner(System.in);
+		// BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 한 줄씩만 읽음
+		for(int tc = 1; tc <= 10; tc++) {
+			N = sc.nextInt();
+			start = sc.nextInt();
+			mmax = 0;
+			arr = new int[101][101];
+			check = new int[101];
+			
+			for(int i = 1; i <= N/2; i++) {
+				int from, to;
+				from = sc.nextInt();
+				to = sc.nextInt();
+				arr[from][to] = 1;
+				mmax = Math.max(mmax, Math.max(from, to));
+			}
+			
+			Queue<Integer> q = new LinkedList<>();
+			
+			check[start] = 1;
+			q.add(start);
+			while(!q.isEmpty()) {
+				int s = q.poll();
+				for(int i = 1; i <= mmax; i++) {
+					if(check[i] == 0 && arr[s][i] == 1) {
+						check[i] = check[s] + 1;
+						q.add(i);
+					}
+				}
+			}
+			
+			int idx = 0, ans = 0;
+			for(int i = 1; i <= mmax; i++) {
+				if(check[i] > ans) {
+					ans = check[i];
+					idx = i;
+				}
+				else if(check[i] == ans) {
+					if(i > idx) {
+						idx = i;
+					}
+				}
+			}
+			
+			System.out.println("#" + tc + " " + idx);
+		}
+	}
+
+}

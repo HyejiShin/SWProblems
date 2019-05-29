@@ -1,0 +1,65 @@
+// https://www.acmicpc.net/problem/2468
+// 2468_안전 영역
+// 비가 아예 오지 않는 경우도 생각해야 함 ex) 모든 지역의 높이가 1인 경우
+
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+
+using namespace std;
+
+int N, ans = 0;
+int arr[101][101], check[101][101];
+int dx[4] = { 0, 1, 0, -1 };
+int dy[4] = { 1, 0, -1, 0 };
+
+void solve(int x, int y, int cnt, int k) {
+	check[x][y] = cnt;
+	for (int d = 0; d < 4; d++) {
+		int nx = x + dx[d];
+		int ny = y + dy[d];
+		if (nx < 0 || nx >= N || ny < 0 || ny >= N) 
+			continue;
+		if ( check[nx][ny] == 0 && arr[nx][ny] > k) {
+			solve(nx, ny, cnt, k);
+		}
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> N;
+	int mmin = 101, mmax = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> arr[i][j];
+			mmin = min(arr[i][j], mmin);
+			mmax = max(arr[i][j], mmax);
+		}
+	}
+
+	//cout << mmax << ' ' << mmin << '\n';
+	for (int k = mmax-1; k >= mmin-1; k--) {
+		int cnt = 0;
+	//	cout << "k : " << k << '\n';
+		memset(check, 0, sizeof(check));
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (check[i][j] == 0 && arr[i][j] > k) {
+					cnt++;
+				//	cout << i << ' ' << j << '\n';
+					solve(i, j, cnt, k);
+
+				}
+			}
+		}
+	//	cout << k << ' ' << cnt << '\n';
+		ans = max(ans, cnt);
+	}
+
+	cout << ans << '\n';
+
+	return 0;
+
+}

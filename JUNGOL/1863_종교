@@ -1,0 +1,43 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int N, M;
+int check[50005];
+vector<vector<int>> vec; // vector로 2차원 배열처럼 쓰기 위해서는 vec.resize() 해줘야 함
+
+void solve(int idx) {
+	for (int i = 0; i < vec[idx].size(); i++) {
+		if (check[vec[idx][i]] == 0) {
+			check[vec[idx][i]] = 1;
+			solve(vec[idx][i]);
+		}
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> N >> M;
+	vec.resize(N + 1);
+
+	for (int i = 0; i < M; i++) {
+		int a, b;
+		cin >> a >> b;
+		vec[a].push_back(b);
+		vec[b].push_back(a);
+	}
+
+	int ans = 0;
+
+	for (int i = 1; i <= N; i++) {
+		if (check[i] == 0) {
+			check[i] = 1;
+			ans++;
+			solve(i);
+		}
+	}
+
+	cout << ans << '\n';
+	return 0;
+}

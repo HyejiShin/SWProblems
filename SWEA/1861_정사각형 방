@@ -1,0 +1,52 @@
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int T, N, ans = 0, num = 0, check = 0;
+int arr[1001][1001];
+int dx[4] = { 0, 1, 0, -1 };
+int dy[4] = { 1, 0, -1, 0 };
+
+void solve(int x, int y, int cnt) {
+	check = max(check, cnt);
+	for (int d = 0; d < 4; d++) {
+		int nx = x + dx[d];
+		int ny = y + dy[d];
+		if (nx < 0 || nx >= N || ny < 0 || ny >= N || arr[x][y] + 1 != arr[nx][ny])
+			continue;
+		if (arr[x][y] + 1 == arr[nx][ny]) {
+			solve(nx, ny, cnt+1);
+		}
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> T;
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> N;
+		ans = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				cin >> arr[i][j];
+			}
+		}
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				check = 0;
+				solve(i, j, 1);
+				if (ans < check) {
+					num = arr[i][j];
+					ans = check;
+				}
+				else if (ans == check) {
+					num = min(num, arr[i][j]);
+				}
+			}
+		}
+		cout << "#" << tc << ' ' << num << ' ' << ans << '\n';
+	}
+	return 0;
+}

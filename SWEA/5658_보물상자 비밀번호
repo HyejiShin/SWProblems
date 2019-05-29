@@ -1,0 +1,68 @@
+// 5658_보물상자 비밀번호
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+int T, N, K;
+vector<int> ans;
+vector<char> input;
+
+int change(char c) {
+	if (c >= '0' && c <= '9')
+		return c - '0';
+	else if (c >= 'A' && c <= 'F')
+		return c - '0' - 7;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> T;
+
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> N >> K;
+		// 초기화
+		input.clear();
+		ans.clear();
+		for (int i = 0; i < N; i++) {
+			char a;
+			cin >> a;
+			input.push_back(a);
+		}
+		
+		int n = N / 4;
+
+		for (int k = 0; k < n; k++) {
+			int s = N - 1;
+			while (s >= 0) {
+				int mul = 1;
+				int num = 0;
+				bool flag = false;
+				for (int j = s; j > s - n; j--) {
+					num += mul * change(input[j]);
+					mul *= 16;
+				}
+				for (int i = 0; i < ans.size(); i++) {
+					if (ans[i] == num) {
+						flag = true;
+						break;
+					}
+				}
+				if (!flag)
+					ans.push_back(num);
+				s -= n;
+			}
+			char c = input.front();
+			input.erase(input.begin());
+			input.push_back(c);
+		}
+
+		sort(ans.begin(), ans.end());
+		cout << "#" << tc << " " << ans[ans.size() - K] << '\n';
+		
+	}
+	return 0;
+}

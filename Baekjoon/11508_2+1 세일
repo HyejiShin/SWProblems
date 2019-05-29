@@ -1,0 +1,28 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int N, ans;
+vector<int> price;
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		int a;
+		cin >> a;
+		price.push_back(a);
+	}
+	sort(price.begin(), price.end());
+	reverse(price.begin(), price.end());
+
+	for (int i = 0; i <price.size(); i++) {
+		if (i % 3 == 2)
+			continue;
+		ans += price[i];
+	}
+	cout << ans << '\n';
+	return 0;
+}

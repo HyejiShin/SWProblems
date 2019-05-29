@@ -1,0 +1,52 @@
+import java.util.Scanner;
+
+public class Solution1861_정사각형방_서울9반_신혜지 {
+	static int T, N, ans, check, num;
+	static int[][] arr;
+	static int[] dx = {0, 1, 0, -1}, dy = {1, 0, -1, 0};
+	
+	static void Solve(int x, int y, int cnt) {
+		check = Math.max(check, cnt);
+		for(int d = 0; d < 4; d++) {
+			int nx = x + dx[d];
+			int ny = y + dy[d];
+			if(nx < 0 || nx >= N || ny < 0 || ny >= N)
+				continue;
+			if(arr[x][y] + 1 == arr[nx][ny])
+				Solve(nx, ny, cnt+1);
+		}
+	}
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		T = sc.nextInt();
+		
+		for(int tc = 1; tc <= T; tc++) {
+			N = sc.nextInt();
+			arr = new int[N][N];
+			ans = 0;
+			for(int i = 0; i < N; i++) {
+				for(int j = 0; j < N; j++) {
+					arr[i][j] = sc.nextInt();
+				}
+			}
+			
+			for(int i = 0; i < N; i++) {
+				for(int j = 0; j < N; j++) {
+					check = 0;
+					Solve(i, j, 1);
+					if(check > ans) {
+						ans = check;
+						num = arr[i][j];
+					}
+					else if(check == ans) {
+						num = Math.min(num, arr[i][j]);
+					}
+				}
+			}
+			System.out.println("#" + tc + " " + num + " " + ans);
+		}
+
+	}
+
+}

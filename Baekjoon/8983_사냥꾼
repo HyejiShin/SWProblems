@@ -1,0 +1,71 @@
+// time limit 주의
+// 정렬 -- 조건 찾아내기
+//[풀이]
+/*
+동물 A를 기준으로 왼쪽에서 가장 가까운 사대와 오른쪽에서 가장 가까운 사대(가장 가까운 왼쪽 사대, 가장 가까운 왼쪽 사대+1(오른쪽에서 가까운 사대 의미))
+이렇게 두 사대만 확인하면 된다.
+
+사대와 동물들을 x좌표 기준으로 정렬 -- A 동물을 확인 할때 Vn 사대와 Vn + 1 사대를 확인했다면,
+A이후의 동물들을 확인 할 때도 Vn부터 확인하면 된다.
+
+시간복잡도 : O(N + M)
+전체 시간복잡도 : O(NlogN + MlogM) // 정렬해서
+*/
+
+
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+int M, N, L;
+
+vector<int> mm;
+vector<pair<int, int> > animal;
+
+int cal(int x, int  y, int a) {
+	return (abs(x - a) + y);
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+
+	cin >> M >> N >> L;
+
+	for (int i = 0; i < M; i++) {
+		int m;
+		cin >> m;
+		mm.push_back(m);
+	}
+
+	sort(mm.begin(), mm.end());
+	
+	for (int i = 0; i < N; i++) {
+		int x, y;
+		cin >> x >> y;
+		animal.push_back({ x, y });
+	}
+
+	sort(animal.begin(), animal.end());
+
+	int ans = 0;
+	int k = 0;
+	for (int i = 0; i < N; i++) {
+		while (k < M - 1 && mm[k + 1] < animal[i].first) {
+			k++;
+		}
+		if (cal(animal[i].first, animal[i].second, mm[k]) <= L) {
+			ans++;
+			continue;
+		}
+		if (k != M - 1 && cal(animal[i].first, animal[i].second, mm[k + 1]) <= L) {
+			ans++;
+			continue;
+		}
+	}
+	
+	cout << ans << '\n';
+	return 0;
+}

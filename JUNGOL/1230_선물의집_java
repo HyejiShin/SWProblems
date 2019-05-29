@@ -1,0 +1,50 @@
+import java.util.Scanner;
+
+public class Main1230_선물의집_서울9반_신혜지 {
+	static int N, mmax;
+	static int[][] arr, check;
+	static int dx[] = {0, 1, 0, -1}, dy[] = {1, 0, -1, 0};
+	
+	static void solve(int x, int y, int cnt) {
+		if(x == N-1 && y == N-1) {
+			mmax = Math.max(mmax, cnt);
+			return;
+		}
+		
+		for(int d = 0; d < 4; d++) {
+			int nx = x + dx[d];
+			int ny = y + dy[d];
+			if(nx < 0 || nx >= N || ny < 0 || ny >= N || check[nx][ny] == 1 || arr[nx][ny] == 1)
+				continue;
+			if(check[nx][ny] == 0) {
+				check[nx][ny] = 1;
+				if(arr[nx][ny] == 0)
+					solve(nx, ny, cnt);
+				else if(arr[nx][ny] == 2)
+					solve(nx, ny, cnt + 1);
+				check[nx][ny] = 0;
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		N = sc.nextInt();
+		arr = new int[N+1][N+1];
+		check = new int[N+1][N+1];
+		
+		for(int i = 0; i < N; i++) {
+			for(int j = 0; j < N; j++) {
+				arr[i][j] = sc.nextInt();
+			}
+		}
+		
+		check[0][0] = 1;
+		if(arr[0][0] == 0)
+			solve(0, 0, 0);
+		else if(arr[0][0] == 2) 
+			solve(0, 0, 1);
+		
+		System.out.println(mmax);
+	}
+}

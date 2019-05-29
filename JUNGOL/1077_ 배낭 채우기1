@@ -1,0 +1,38 @@
+// http://www.jungol.co.kr/bbs/board.php?bo_table=pbank&wr_id=357&sca=30&sfl=wr_hit&stx=1077&sop=and
+
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+using namespace std;
+
+int N, W, mmax;
+int dp[1001] = {0, };
+vector<pair<int, int> > vec;
+
+int main() {
+	ios::sync_with_stdio(false);
+
+	cin >> N >> W;
+
+	for (int i = 0; i < N; i++) {
+		int w, p;
+		cin >> w >> p;
+		vec.push_back({ w, p });
+	}
+	sort(vec.begin(), vec.end());
+	dp[vec[0].first] = vec[0].second;
+	
+	for (int w = 1; w <= W; w++){
+		for (int i = 0; i < N; i++) {	 
+			if (w - vec[i].first >= 0) {
+				dp[w] = max(dp[w], dp[w - vec[i].first] + vec[i].second);
+				mmax = max(mmax, dp[w]);
+			}
+		}
+	}
+
+	cout << mmax << '\n';
+	return 0;
+}

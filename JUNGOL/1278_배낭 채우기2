@@ -1,0 +1,34 @@
+// http://www.jungol.co.kr/bbs/board.php?bo_table=pbank&wr_id=561&sca=3050
+
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+using namespace std;
+
+int N, W, mmax;
+int dp[1001] = { 0, };
+vector<pair<int, int> > vec;
+
+int main() {
+	ios::sync_with_stdio(false);
+
+	cin >> N >> W;
+
+	for (int i = 0; i < N; i++) {
+		int w, p;
+		cin >> w >> p;
+		vec.push_back({ w, p });
+	}
+	sort(vec.begin(), vec.end());
+
+	for (int i = 0; i < N; i++) {
+		// 뒤에서 부터 값을 구하여 중복으로 가치를 더하는 문제를 해결
+		for (int w = W; w >= vec[i].first; w--) {
+			dp[w] = max(dp[w], dp[w - vec[i].first] + vec[i].second);
+		}
+	}
+	cout << dp[W] << '\n';
+	return 0;
+}

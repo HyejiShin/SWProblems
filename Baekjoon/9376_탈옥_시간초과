@@ -1,0 +1,133 @@
+// https://www.acmicpc.net/problem/9376
+// 9376_탈옥
+
+#include <iostream>
+#include <queue>
+#include <algorithm>
+#include <cstring>
+#include <climits>
+
+using namespace std;
+
+struct Info {
+	int x, y, cnt;
+	char map[101][101];
+};
+int T, H, W, ans = INT_MAX;
+char arr[101][101];
+int pri[2][2];
+int dx[4] = { 0, 1, 0, -1 }, dy[4] = { 1, 0, -1, 0 };
+int visit[101][101] = { 0, };
+
+void solve(int p, int cnt, char tmp[101][101]) {
+	//cout << "p : " << p << '\n';
+	memset(visit, 0, sizeof(visit));
+	queue<Info> q;
+	Info temp;
+	visit[pri[p][0]][pri[p][1]] = 1;
+	temp.x = pri[p][0]; temp.y = pri[p][1]; temp.cnt = cnt; memcpy(temp.map, tmp, sizeof(char)*101*101);
+	q.push({ temp });
+	/*for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			cout << temp.map[i][j];
+		}
+		cout << '\n';
+	}
+	cout << "solve in\n";*/
+	while (!q.empty()) {
+		int x = q.front().x;
+		int y = q.front().y;
+		int cnt = q.front().cnt;
+		char map[101][101] = { '0', };
+		memcpy(map, q.front().map, sizeof(char)*101*101);
+		q.pop();
+		//cout << x << ' ' << y << ' ' << cnt << '\n';
+		
+		// 종료조건
+		if (x == 0 || y == 0 || x == H - 1 || y == W - 1) {
+			if (p == 0) {
+				/*cout << '\n';
+				for (int i = 0; i < H; i++) {
+					for (int j = 0; j < W; j++) {
+						cout << map[i][j];
+					}
+					cout << '\n';
+				}
+				cout << '\n';
+				*/
+				//cout << p << " : " << x << ' ' << y << ' ' << cnt << '\n';
+				int temp_visit[101][101] = { 0, };
+				memcpy(temp_visit, visit, sizeof(visit));
+				solve(1, cnt, map);
+				//cout << "p : " << p << '\n';
+				memcpy(visit, temp_visit, sizeof(temp_visit));
+				//continue;
+			}
+			else {
+				/*cout << '\n';
+				for (int i = 0; i < H; i++) {
+					for (int j = 0; j < W; j++) {
+						cout << map[i][j];
+					}
+					cout << '\n';
+				}
+				cout << '\n';
+				*/
+				//cout << p << " : " << x << ' ' << y << ' ' << cnt << '\n';
+				ans = min(ans, cnt);
+				//continue;
+			}
+		}
+
+		for (int d = 0; d < 4; d++) {
+			int nx = x + dx[d];
+			int ny = y + dy[d];
+			if (nx < 0 || nx >= H || ny < 0 || ny >= W || map[nx][ny] == '*' || visit[nx][ny] == 1)
+				continue;
+			else if (map[nx][ny] == '.') {
+				Info tmp;
+				tmp.x = nx; tmp.y = ny; tmp.cnt = cnt; memcpy(tmp.map, map, sizeof(map));
+				visit[nx][ny] = 1;
+				q.push(tmp);
+			}
+			else if (map[nx][ny] == '#') {
+				Info tmp;
+				tmp.x = nx; tmp.y = ny; tmp.cnt = cnt + 1; memcpy(tmp.map, map, sizeof(map));
+				tmp.map[nx][ny] = '.';
+				visit[nx][ny] = 1;
+				q.push(tmp);
+			}
+		}
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> T;
+
+	for (int tc = 1; tc <= T; tc++) {
+		// 초기화
+		memset(visit, 0, sizeof(visit));
+		ans = INT_MAX;
+
+		cin >> H >> W;
+		int cnt = 0;
+		for (int i = 0; i < H; i++) {
+			for (int j = 0; j < W; j++) {
+				cin >> arr[i][j];
+				if (arr[i][j] == '$') {
+					pri[cnt][0] = i;
+					pri[cnt][1] = j;
+					arr[i][j] = '.';
+					cnt++;
+				}
+			}
+		}
+
+		solve(0, 0, arr);
+
+		cout << ans << '\n';
+	}
+	
+	return 0;
+}

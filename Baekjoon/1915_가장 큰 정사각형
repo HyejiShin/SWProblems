@@ -1,0 +1,46 @@
+// https://www.acmicpc.net/problem/1915
+// 1915_가장 큰 정사각형
+// 위, 왼, 대각선의 값중 가장 최소값 + 1 값을 d에 저장
+
+#include <iostream>
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
+int N, M;
+int arr[1005][1005], d[1005][1005];
+
+int main() {
+	cin >> N >> M;
+
+	for (int i = 1; i <= N; i++) {
+		string str;
+		cin >> str;
+		for (int j = 0; j <= M; j++) {
+			arr[i][j + 1] = str[j] - 48; // string은 char 배열이므로 char --> int // 48 빼주기
+		}
+	}
+
+	int mmax = 0;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			if (arr[i][j] == 1) {
+				d[i][j] = min(d[i][j - 1], min(d[i - 1][j - 1], d[i - 1][j])) + 1;
+				mmax = max(mmax, d[i][j]);
+			}
+		}
+	}
+
+	// 출력 -- 확인
+	//for (int i = 1; i <= N; i++) {
+	//	for (int j = 1; j <= M; j++) {
+	//		cout << d[i][j] << ' ';
+	//	}
+	//	cout << '\n';
+	//}
+
+	cout << mmax * mmax << '\n';
+
+	return 0;
+}

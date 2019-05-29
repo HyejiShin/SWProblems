@@ -1,0 +1,85 @@
+// https://www.acmicpc.net/problem/13460
+// 13460_구슬탈출2
+// 포인터 활용 -- move(int &x, int &y, int d)
+#include <iostream>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+int N, M, rx, ry, bx, by, hx, hy, ans = INT_MAX;
+char map[11][11];
+int dx[4] = { 0, 1, 0, -1 };
+int dy[4] = { 1, 0, -1, 0 };
+
+void move(int &x, int &y, int d) {
+	while (1) {
+		x += dx[d]; y += dy[d];
+		if (map[x][y] == '#') { x -= dx[d]; y -= dy[d]; break; }
+		else if (map[x][y] == 'O') break;
+	}
+	return;
+}
+
+void solve(int rx, int ry, int bx, int by, int cnt) {
+	if (cnt > 10) return;
+	if (map[bx][by] == 'O') return;
+	if (map[rx][ry] == 'O' && map[bx][by] == 'O') return;
+	if (map[rx][ry] == 'O' && map[bx][by] != 'O') { ans = min(ans, cnt); return; }
+	
+	bool flag1 = false;
+	bool flag2 = false;
+	if (rx == bx) flag1 = true; // ---왼 // 오
+	if (ry == by) flag2 = true; // ---위 // 아래
+
+	for (int d = 0; d < 4; d++) {
+		int nrx = rx; int nry = ry; int nbx = bx; int nby = by;
+		move(nrx, nry, d);
+		move(nbx, nby, d);
+		if (flag1 && d == 0 && nry == nby && map[nrx][nry] == '.') {
+			if (ry > by) nby -= dy[d];
+			else nry -= dy[d];
+		}
+		else if (flag1 && d == 2 && nry == nby && map[nrx][nry] == '.') {
+			if (ry > by) nry -= dy[d];
+			else nby -= dy[d];
+		}
+		else if (flag2 && d == 1 && nrx == nbx && map[nrx][nry] == '.') {
+			if (rx > bx) nbx -= dx[d];
+			else nrx -= dx[d];
+		}
+		else if (flag2 && d == 3 && nrx == nbx && map[nrx][nry] == '.') {
+			if (rx > bx) nrx -= dx[d];
+			else nbx -= dx[d];
+		}
+		solve(nrx, nry, nbx, nby, cnt + 1);
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+
+	cin >> N >> M;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 'R') {
+				rx = i; ry = j;
+				map[i][j] = '.';
+			}
+			else if (map[i][j] == 'B') {
+				bx = i; by = j;
+				map[i][j] = '.';
+			}
+			else if (map[i][j] == 'O') {
+				hx = i; hy = j;
+			}
+		}
+	}
+
+	solve(rx, ry, bx, by, 0);
+	if (ans == INT_MAX)
+		ans = -1;
+	cout << ans << '\n';
+	return 0;
+}

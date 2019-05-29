@@ -1,0 +1,97 @@
+// https://www.acmicpc.net/problem/2174
+//2174_로봇 시뮬레이션
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Info {
+	int x, y, d;
+};
+int A, B, N, M, index, Y;
+int arr[101][101];
+int dx[4] = { 0, 1, 0, -1 }, dy[4] = { 1, 0, -1, 0 };
+vector<Info> robot;
+bool flag = false, wall = false, rr = false;
+
+void solve(int idx, char m, int cnt) {
+	int x = robot[idx - 1].x;
+	int y = robot[idx - 1].y;
+	int d = robot[idx - 1].d;
+	arr[x][y] = 0;
+	while (cnt > 0) {
+		switch (m) {
+		case 'L': d = (d + 3) % 4; break;
+		case 'R': d = (d + 1) % 4; break;
+		case 'F': 
+			x += dx[d];
+			y += dy[d];
+			if (x < 1 || x > B || y < 1 || y > A) {
+				index = idx;
+				wall = true;
+				break;
+			}
+			if (arr[x][y] != 0) {
+				index = idx;
+				Y = arr[x][y];
+				rr = true;
+				break;
+			}
+		}
+		if (wall || rr)
+			break;
+		cnt--;
+	}
+
+	if (!wall && !rr) {
+		robot[idx - 1].x = x;
+		robot[idx - 1].y = y;
+		robot[idx - 1].d = d;
+		arr[x][y] = idx;
+	}
+}
+
+int moveDir(char d) {
+	int dir;
+	switch (d) {
+	case 'E': dir = 0; break;
+	case 'S': dir = 1; break;
+	case 'W': dir = 2; break;
+	case 'N': dir = 3; break;
+	}
+	return dir;
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> A >> B;
+	cin >> N >> M;
+	for (int i = 1; i <= N; i++) {
+		int x, y; char d;
+		cin >> x >> y >> d;
+		arr[B + 1 - y][x] = i;
+		int dir = moveDir(d);
+		robot.push_back({ B + 1 - y, x, dir });
+	}
+
+	for (int i = 0; i < M; i++) {
+		char m;
+		int idx, cnt;
+		cin >> idx >> m >> cnt;
+		if (flag)
+			continue;
+		solve(idx, m, cnt);
+		if (wall || rr) {
+			flag = true;
+		}
+	}
+
+	if (wall)
+		cout << "Robot " << index << " crashes into the wall\n";
+	else if (rr)
+		cout << "Robot " << index << " crashes into robot " << Y << "\n";
+	else if (!flag)
+		cout << "OK\n";
+	return 0;
+}

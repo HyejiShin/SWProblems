@@ -1,0 +1,58 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+int T, N, ans;
+vector<int> num;
+string s;
+
+int change(char c) {
+	int num = 0;
+	switch (c) {
+	case 'a': case 'b': case 'c': num = 2; break;
+	case 'd': case 'e': case 'f': num = 3; break;
+	case 'g': case 'h': case 'i': num = 4; break;
+	case 'j': case 'k': case 'l': num = 5; break;
+	case 'm': case 'n': case 'o': num = 6; break;
+	case 'p': case 'q': case 'r': case 's': num = 7; break;
+	case 't': case 'u': case 'v': num = 8; break;
+	case 'w': case 'x': case 'y': case 'z': num = 9; break;
+	}
+	return num;
+}
+int main() {
+	ios::sync_with_stdio(false);
+
+	cin >> T;
+	for (int tc = 1; tc <= T; tc++) {
+		cin >> s;
+		ans = 0;
+		num.clear();
+		for (int i = 0; i < s.length(); i++) {
+			num.push_back(s[i] - '0');
+		}
+		cin >> N;
+		for (int i = 0; i < N; i++) {
+			cin >> s;
+			if (s.length() != num.size())
+				continue;
+			bool flag = false;
+			for (int j = 0; j < s.length(); j++) {
+				if (num[j] != change(s[j])) {
+					flag = true;
+					break;
+				}
+			}
+			if (!flag) {
+				//cout << s << '\n';
+				ans++;
+			}
+		}
+
+		cout << "#" << tc << ' ' << ans << '\n';
+	}
+
+	return 0;
+}

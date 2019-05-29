@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <cstring>
+
+using namespace std;
+
+char arr[12][6];
+int visit[12][6];
+int cnt;
+vector<pair<int, int> > vec;
+int dx[4] = { 0, 1, 0, -1 }, dy[4] = { 1, 0, -1, 0 };
+
+void solve(int x, int y, char c) {
+	vec.push_back({ x, y });
+	for (int d = 0; d < 4; d++) {
+		int nx = x + dx[d];
+		int ny = y + dy[d];
+		if (nx < 0 || nx > 11 || ny < 0 || ny > 5 || visit[nx][ny] == 1)
+			continue;
+		if (arr[nx][ny] == c && visit[nx][ny] == 0) {
+			visit[nx][ny] = 1;
+			solve(nx, ny, c);
+		}
+
+	}
+}
+
+void move() {
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 12; j++) {
+			if (j > 0 && arr[j][i] != '.' && arr[j - 1][i] == '.') {
+				int xx = j - 1;
+				while (xx > 0) {
+					if (arr[xx - 1][i] == '.')
+						xx--;
+					else break;
+				}
+				char tmp = arr[j][i];
+				arr[j][i] = '.';
+				arr[xx][i] = tmp;
+			}
+		}
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+
+	for (int i = 11; i >= 0; i--) {
+		for (int j = 0; j < 6; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	bool flag = true;
+	while (flag) {
+		flag = false;
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 6; j++) {
+				if (arr[i][j] != '.') {
+					memset(visit, 0, sizeof(visit));
+					visit[i][j] = 1;
+					solve(i, j, arr[i][j]);
+					if (vec.size() >= 4) {
+						flag = true;
+						for (int i = 0; i < vec.size(); i++) {
+							arr[vec[i].first][vec[i].second] = '.';
+						}
+					}
+					vec.clear();
+				}
+			}
+		}
+		if (flag) cnt++;
+		move();
+	}
+
+	cout << cnt << '\n';
+
+	return 0;
+}
